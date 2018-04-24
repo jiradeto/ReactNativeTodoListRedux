@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet, FlatList } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
 import { connect } from 'react-redux';
-import { initializeList, filterTask } from '../actions';
+import { renderList, filterTask } from '../actions';
 import Input from './common/Input';
 import Button from './common/Button';
 import data from '../todos.json';
@@ -18,7 +18,7 @@ class TodoApp extends Component {
   };
 
   componentWillMount() {
-    this.props.dispatch(initializeList());
+    this.props.dispatch(renderList());
   }
   onAddTask() {
     data.push({
@@ -44,33 +44,15 @@ class TodoApp extends Component {
   }
 
   onPressFilter(index) {
-
-    newData = data.slice().filter(d => {
-      return d.completed === false;
-    });
-    this.setState({
-      tasks: newData
-    });
-
-    
-    this.setState({
-      selectedIndex: index
-    });
-
     switch (index) {
       case 0:
         this.props.dispatch(filterTask(TASK_FILTER_TYPE.FILTER_ALL));
         break;
       case 1:
-        
+        this.props.dispatch(filterTask(TASK_FILTER_TYPE.FILTER_ACTIVE));
         break;
       case 2:
-        newData = data.filter(d => {
-          return d.completed;
-        });
-        this.setState({
-          tasks: newData
-        });
+        this.props.dispatch(filterTask(TASK_FILTER_TYPE.FILTER_COMPLETE));
         break;
     }
   }
@@ -179,7 +161,6 @@ const styles = StyleSheet.create({
 });
 const select = store => {
   const { tasks } = store.todo;
-  console.log('pond here', store.todo);
   return {
     tasks
   };
