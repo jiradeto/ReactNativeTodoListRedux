@@ -1,18 +1,25 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, FlatList } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { initializeList, filterTask } from '../actions';
 import Input from './common/Input';
 import Button from './common/Button';
 import data from '../todos.json';
 import ListItem from './ListItem';
+import { TASK_FILTER_TYPE } from '../actions/type';
+const filters = ['All', 'Active', 'Completed'];
 
-export default class TodoApp extends Component {
+class TodoApp extends Component {
   state = {
     tasks: data,
     newTaskName: '',
     selectedIndex: 0
   };
 
+  componentWillMount() {
+    this.props.dispatch(initializeList());
+  }
   onAddTask() {
     data.push({
       id: data.length + 1,
@@ -37,23 +44,25 @@ export default class TodoApp extends Component {
   }
 
   onPressFilter(index) {
+
+    newData = data.slice().filter(d => {
+      return d.completed === false;
+    });
+    this.setState({
+      tasks: newData
+    });
+
+    
     this.setState({
       selectedIndex: index
     });
 
     switch (index) {
       case 0:
-        this.setState({
-          tasks: data
-        });
+        this.props.dispatch(filterTask(TASK_FILTER_TYPE.FILTER_ALL));
         break;
       case 1:
-        newData = data.slice().filter(d => {
-          return d.completed === false;
-        });
-        this.setState({
-          tasks: newData
-        });
+        
         break;
       case 2:
         newData = data.filter(d => {
@@ -109,7 +118,6 @@ export default class TodoApp extends Component {
 
   render() {
     const { selectedIndex } = this.state;
-    const filters = ['All', 'Active', 'Completed'];
     return (
       <View style={styles.container}>
         <View style={[styles.addSection, styles.seperator]}>
@@ -125,7 +133,7 @@ export default class TodoApp extends Component {
         </View>
         <View style={styles.listSection}>
           <FlatList
-            data={this.state.tasks}
+            data={this.props.tasks}
             keyExtractor={this._keyExtractor}
             renderItem={this._renderItem}
           />
@@ -169,3 +177,11 @@ const styles = StyleSheet.create({
     flex: 8
   }
 });
+const select = store => {
+  const { tasks } = store.todo;
+  console.log('pond here', store.todo);
+  return {
+    tasks
+  };
+};
+export default connect(select)(TodoApp);
