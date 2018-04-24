@@ -21,6 +21,17 @@ export const filterTask = type => {
   }
 };
 
+export const addTask = ({ tasks, text }) => {
+  return renderList([
+    ...tasks,
+    {
+      id: tasks.length + 1,
+      text: text,
+      completed: false
+    }
+  ]);
+};
+
 export const renderList = (
   tasks = json,
   filter = TASK_FILTER_TYPE.FILTER_ALL

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet, FlatList } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
 import { connect } from 'react-redux';
-import { renderList, filterTask } from '../actions';
+import { renderList, filterTask, addTask } from '../actions';
 import Input from './common/Input';
 import Button from './common/Button';
 import data from '../todos.json';
@@ -12,7 +12,6 @@ const filters = ['All', 'Active', 'Completed'];
 
 class TodoApp extends Component {
   state = {
-    tasks: data,
     newTaskName: '',
     selectedIndex: 0
   };
@@ -21,26 +20,12 @@ class TodoApp extends Component {
     this.props.dispatch(renderList());
   }
   onAddTask() {
-    data.push({
-      id: data.length + 1,
-      text: this.state.newTaskName,
-      completed: false
-    });
-
-    this.setState({
-      tasks: data
-    });
-
-    // this.setState({
-    //   tasks: [
-    //     ...this.state.tasks,
-    //     {
-    //       id: this.state.tasks.length + 1,
-    //       text: this.state.newTaskName,
-    //       completed: false
-    //     }
-    //   ]
-    // });
+    this.props.dispatch(
+      addTask({
+        tasks: this.props.tasks,
+        text: this.state.newTaskName
+      })
+    );
   }
 
   onPressFilter(index) {
